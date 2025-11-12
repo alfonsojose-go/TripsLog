@@ -1,0 +1,28 @@
+﻿@model TripsLog.Models.Trip;
+@{
+    ViewData["Title"] = "Add Trip Destination and Dates";
+}
+
+<h2 class="align-content-center">@ViewBag.Title</h2>
+
+<form asp-controller="Trip" asp-action="ProcessTrip" method="post">
+    <div>
+        <label asp-for="@Model.Destination">Destination</label>
+        <input asp-for="@Model.Destination" type="text" />
+    </div>
+    <div>
+        <label asp-for="@Model.Accommodation.Name">Accommodation</label>
+        <input asp-for="@Model.Accommodation.Name" type="text" />
+    </div>
+    <div>
+        <label asp-for="@Model.StartDate">Start Date</label>
+        <input asp-for="@Model.StartDate" type="date" />
+    </div>
+    <div>
+        <label asp-for="@Model.EndDate">End Date</label> <!-- Fixed: Changed "Start Date" to "End Date" -->
+        <input asp-for="@Model.EndDate" type="date" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Next</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Cancel</a>
+</form>

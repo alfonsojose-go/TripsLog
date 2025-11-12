@@ -1,0 +1,18 @@
+﻿@model TripsLog.Models.Trip;
+
+<h2 class="align-content-center">@ViewBag.Title</h2>
+
+<form asp-controller="Trip" asp-action="ProcessAccommodation" method="post">
+    <div>
+        <label asp-for="@Model.Accommodation.Phone">Phone number</label>
+        <input asp-for="@Model.Accommodation.Phone" type="text" />
+    </div>
+    <div>
+        <label asp-for="@Model.Accommodation.Email">Email</label>
+        <input asp-for="@Model.Accommodation.Email" type="text" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Next</button>
+    <a asp-controller="Trip" asp-action="Trip" class="btn btn-primary">Back</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Cancel</a>
+</form>
