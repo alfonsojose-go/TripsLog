@@ -4,20 +4,15 @@
 
 <form asp-controller="Trip" asp-action="SaveTrip" method="post">
     <div id="todos-container">
-        @for (int i = 0; i < Model.Todos.Count; i++)
-        {
-            <div class="todo-item mb-2">
-                <div class="input-group">
-                    <div class="input-group-text">
-                        <input asp-for="@Model.Todos[i].IsComplete" class="form-check-input" />
-                    </div>
-                    <input asp-for="@Model.Todos[i].Name" class="form-control" placeholder="Enter thing to do" />
-                    <input type="hidden" asp-for="@Model.Todos[i].TodoId" />
-                    <input type="hidden" asp-for="@Model.Todos[i].TripId" />
-                    <button type="button" class="btn btn-outline-danger remove-todo">Remove</button>
+        <div class="todo-item mb-2">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <input type="checkbox" name="TodoIsComplete[]" class="form-check-input" value="true" />
                 </div>
+                <input type="text" name="TodoName[]" class="form-control" placeholder="Enter thing to do" />
+                <button type="button" class="btn btn-outline-danger remove-todo">Remove</button>
             </div>
-        }
+        </div>
     </div>
 
     <button type="button" id="add-todo" class="btn btn-secondary mt-2">Add Another Todo</button>
@@ -33,17 +28,14 @@
     <script>
         document.getElementById('add-todo').addEventListener('click', function() {
             const container = document.getElementById('todos-container');
-            const index = container.children.length;
 
             const newTodo = `
                 <div class="todo-item mb-2">
                     <div class="input-group">
                         <div class="input-group-text">
-                            <input type="checkbox" name="Todos[${index}].IsComplete" class="form-check-input" />
+                            <input type="checkbox" name="TodoIsComplete[]" class="form-check-input" value="true" />
                         </div>
-                        <input type="text" name="Todos[${index}].Name" class="form-control" placeholder="Enter thing to do" />
-                        <input type="hidden" name="Todos[${index}].TodoId" value="0" />
-                        <input type="hidden" name="Todos[${index}].TripId" value="@Model.TripId" />
+                        <input type="text" name="TodoName[]" class="form-control" placeholder="Enter thing to do" />
                         <button type="button" class="btn btn-outline-danger remove-todo">Remove</button>
                     </div>
                 </div>
@@ -52,28 +44,10 @@
             container.insertAdjacentHTML('beforeend', newTodo);
         });
 
-        // Remove todo item
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('remove-todo')) {
                 e.target.closest('.todo-item').remove();
-                // Reindex the remaining items
-                reindexTodos();
             }
         });
-
-        function reindexTodos() {
-            const container = document.getElementById('todos-container');
-            const items = container.getElementsByClassName('todo-item');
-
-            Array.from(items).forEach((item, index) => {
-                const inputs = item.querySelectorAll('input');
-                inputs.forEach(input => {
-                    const name = input.getAttribute('name');
-                    if (name) {
-                        input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
-                    }
-                });
-            });
-        }
     </script>
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TripsLog.Models;
 
@@ -11,9 +12,11 @@ using TripsLog.Models;
 namespace TripsLog.Migrations
 {
     [DbContext(typeof(TripsDbContext))]
-    partial class TripsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112185614_AddAccommodationIdToTodo")]
+    partial class AddAccommodationIdToTodo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,6 +64,9 @@ namespace TripsLog.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TodoId"));
 
+                    b.Property<int>("AccommodationId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsComplete")
                         .HasColumnType("bit");
 
@@ -72,6 +78,8 @@ namespace TripsLog.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("TodoId");
+
+                    b.HasIndex("AccommodationId");
 
                     b.HasIndex("TripId");
 
@@ -120,11 +128,19 @@ namespace TripsLog.Migrations
 
             modelBuilder.Entity("TripsLog.Models.Todo", b =>
                 {
+                    b.HasOne("TripsLog.Models.Accommodation", "Accommodation")
+                        .WithMany()
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TripsLog.Models.Trip", "Trip")
                         .WithMany("Todos")
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Accommodation");
 
                     b.Navigation("Trip");
                 });

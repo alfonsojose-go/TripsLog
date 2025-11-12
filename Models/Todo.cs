@@ -8,5 +8,8 @@
         public bool IsComplete { get; set; }
 
         public int TripId { get; set; }
+
+        public Trip Trip { get; set; }
+        
     }
 }

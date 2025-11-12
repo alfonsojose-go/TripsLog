@@ -9,5 +9,7 @@
 
         public int TripId { get; set; }
 
+        public Trip Trip { get; set; }
+
     }
 }

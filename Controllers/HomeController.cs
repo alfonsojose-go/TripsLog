@@ -20,6 +20,8 @@ namespace TripsLog.Controllers
         public IActionResult Index()
         {
             var trips = context.Trips
+                .Include(t => t.Accommodation)
+                .Include(t => t.Todos)
                 .OrderBy(c => c.Destination)
                 .ToList();
             return View(trips);

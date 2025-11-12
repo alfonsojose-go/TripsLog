@@ -16,7 +16,7 @@ namespace TripsLog.Models
 
         public int AccomodationId { get; set; }
 
-        public Accommodation Accommodation { get; set; }
+        public Accommodation Accommodation { get; set; } = new Accommodation();
 
         public int TodoId { get; set; }
 

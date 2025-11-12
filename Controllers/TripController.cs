@@ -15,10 +15,10 @@ namespace TripsLog.Controllers
         {
             context = ctx;
         }
+
         [HttpGet]
         public IActionResult Trip()
         {
-     
             ViewBag.Categories = context.Trips.OrderBy(c => c.Destination).ToList();
             return View();
         }
@@ -26,24 +26,15 @@ namespace TripsLog.Controllers
         [HttpPost]
         public IActionResult ProcessTrip(Trip trip)
         {
-            // Store accommodation name in TempData
+            // Store all trip data in TempData
+            TempData["Destination"] = trip.Destination;
+            TempData["StartDate"] = trip.StartDate.ToString("yyyy-MM-dd");
+            TempData["EndDate"] = trip.EndDate.ToString("yyyy-MM-dd");
+
             if (!string.IsNullOrEmpty(trip.Accommodation?.Name))
             {
                 TempData["AccommodationName"] = trip.Accommodation.Name;
             }
-
-            //Store destination name in TempData
-            if (TempData["Destination"] != null)
-            {
-                trip.Destination = TempData["Destination"].ToString();
-                // Store destination for the Todo view
-                TempData["Destination"] = TempData["Destination"]; // Keep it
-            }
-
-            // Store other trip data if needed
-            TempData["Destination"] = trip.Destination;
-            TempData["StartDate"] = trip.StartDate;
-            TempData["EndDate"] = trip.EndDate;
 
             return RedirectToAction("Accommodation");
         }
@@ -51,14 +42,11 @@ namespace TripsLog.Controllers
         [HttpGet]
         public IActionResult Accommodation()
         {
-            // Create a new Trip object or get from repository
             var trip = new Trip();
 
-            // Set ViewBag title using TempData
             if (TempData["AccommodationName"] != null)
             {
                 ViewBag.Title = $"Add info for {TempData["AccommodationName"]}";
-                // Keep the TempData for the next request
                 TempData.Keep("AccommodationName");
             }
             else
@@ -72,37 +60,38 @@ namespace TripsLog.Controllers
         [HttpPost]
         public IActionResult ProcessAccommodation(Trip trip)
         {
-            // Retrieve the accommodation name from TempData
-            if (TempData["AccommodationName"] != null)
+            // Store accommodation details in TempData
+            if (!string.IsNullOrEmpty(trip.Accommodation?.Phone))
             {
-                trip.Accommodation.Name = TempData["AccommodationName"].ToString();
+                TempData["AccommodationPhone"] = trip.Accommodation.Phone;
             }
 
-            // Retrieve other trip data
-            if (TempData["Destination"] != null)
+            if (!string.IsNullOrEmpty(trip.Accommodation?.Email))
             {
-                trip.Destination = TempData["Destination"].ToString();
+                TempData["AccommodationEmail"] = trip.Accommodation.Email;
             }
 
-            // Save the complete trip data to database or session
-            // _tripRepository.Save(trip);
+            // Keep existing TempData values
+            TempData.Keep("Destination");
+            TempData.Keep("StartDate");
+            TempData.Keep("EndDate");
+            TempData.Keep("AccommodationName");
 
             return RedirectToAction("Todo");
         }
 
-
-
         [HttpGet]
         public IActionResult Todo()
         {
-            // Create a new Trip object
-            var trip = new Trip();
+            var trip = new Trip
+            {
+                Todos = new List<Todo> { new Todo() } 
+            };
 
-            // Set ViewBag title using Destination from TempData
             if (TempData["Destination"] != null)
             {
                 ViewBag.Title = $"Things To Do in {TempData["Destination"]}";
-                TempData.Keep("Destination"); // Keep it for future requests
+                TempData.Keep("Destination");
             }
             else
             {
@@ -113,34 +102,56 @@ namespace TripsLog.Controllers
         }
 
         [HttpPost]
-        public IActionResult SaveTrip(Trip trip)
+        public IActionResult SaveTrip(string[] TodoName, bool[] TodoIsComplete)
         {
-            // Retrieve all stored data from TempData
-            if (TempData["Destination"] != null)
+            // Read TempData values
+            var destination = TempData["Destination"]?.ToString();
+            var startDateStr = TempData["StartDate"]?.ToString();
+            var endDateStr = TempData["EndDate"]?.ToString();
+            var accommodationName = TempData["AccommodationName"]?.ToString();
+            var accommodationPhone = TempData["AccommodationPhone"]?.ToString();
+            var accommodationEmail = TempData["AccommodationEmail"]?.ToString();
+
+            // Create and save Trip
+            var completeTrip = new Trip
             {
-                trip.Destination = TempData["Destination"].ToString();
+                Destination = destination,
+                StartDate = DateTime.Parse(startDateStr),
+                EndDate = DateTime.Parse(endDateStr),
+                Accommodation = new Accommodation
+                {
+                    Name = accommodationName,
+                    Phone = accommodationPhone,
+                    Email = accommodationEmail
+                }
+            };
+
+            context.Trips.Add(completeTrip);
+            context.SaveChanges();
+
+            // Save all todos
+            if (TodoName != null)
+            {
+                for (int i = 0; i < TodoName.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(TodoName[i]))
+                    {
+                        var isComplete = TodoIsComplete != null && i < TodoIsComplete.Length && TodoIsComplete[i];
+
+                        var newTodo = new Todo
+                        {
+                            Name = TodoName[i],
+                            IsComplete = isComplete,
+                            TripId = completeTrip.TripId
+                        };
+                        context.Todos.Add(newTodo);
+                    }
+                }
+                context.SaveChanges();
             }
 
-            if (TempData["StartDate"] != null)
-            {
-                trip.StartDate = DateTime.Parse(TempData["StartDate"].ToString());
-            }
-
-            if (TempData["EndDate"] != null)
-            {
-                trip.EndDate = DateTime.Parse(TempData["EndDate"].ToString());
-            }
-
-            if (TempData["AccommodationName"] != null)
-            {
-                trip.Accommodation.Name = TempData["AccommodationName"].ToString();
-            }
-
-            // Now you have the complete trip object with all data
-            // Save to database
-            // _tripRepository.Save(trip);
-
-            return RedirectToAction("Index", "Home"); // Or wherever you want to go after saving
+            TempData.Clear();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
