@@ -21,7 +21,20 @@
                 <td>@trip.Destination</td>
                 <td>@trip.StartDate</td>
                 <td>@trip.EndDate</td>
-                <td>@trip.Accommodation.Name</td>
+                <td>
+                    <ul>
+                        
+                        <p>@trip.Accommodation.Name</p>
+                        <p>Phone: @trip.Accommodation.Phone</p>
+                        <p>Email: @trip.Accommodation.Email</p>
+                    
+                    </ul>
+                    
+                        
+                
+                    
+
+                </td>
                <td>
                     <ul>
                         @foreach (var thingToDo in trip.Todos)
