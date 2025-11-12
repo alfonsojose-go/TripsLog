@@ -31,12 +31,20 @@ namespace TripsLog.Controllers
             TempData["StartDate"] = trip.StartDate.ToString("yyyy-MM-dd");
             TempData["EndDate"] = trip.EndDate.ToString("yyyy-MM-dd");
 
-            if (!string.IsNullOrEmpty(trip.Accommodation?.Name))
+            if (!string.IsNullOrWhiteSpace(trip.Accommodation?.Name))
             {
                 TempData["AccommodationName"] = trip.Accommodation.Name;
+
+                //Redirect to Accommodation action if accommodation name is provided
+                return RedirectToAction("Accommodation");
+            }
+            else 
+            {
+                // If no accommodation, skip to Todo view
+                return RedirectToAction("Todo");
             }
 
-            return RedirectToAction("Accommodation");
+            
         }
 
         [HttpGet]
@@ -44,15 +52,27 @@ namespace TripsLog.Controllers
         {
             var trip = new Trip();
 
-            if (TempData["AccommodationName"] != null)
+            // Set ViewBag for back button logic
+            ViewBag.HasDestination = TempData["Destination"] != null;
+            TempData.Keep("Destination"); // Keep it for the back button check
+
+            if (ViewBag.HasDestination)
             {
-                ViewBag.Title = $"Add info for {TempData["AccommodationName"]}";
-                TempData.Keep("AccommodationName");
+                if (TempData["AccommodationName"] != null)
+                {
+                    ViewBag.Title = $"Add info for {TempData["AccommodationName"]}";
+                    TempData.Keep("AccommodationName");
+                }
+                else
+                {
+                    ViewBag.Title = "Add accommodation info";
+                }
             }
             else
             {
                 ViewBag.Title = "Add accommodation info";
             }
+
 
             return View(trip);
         }
@@ -98,6 +118,10 @@ namespace TripsLog.Controllers
                 ViewBag.Title = "Things To Do";
             }
 
+            // Set ViewBag for back button logic
+            ViewBag.HasAccommodation = TempData["AccommodationName"] != null;
+            TempData.Keep("AccommodationName"); // Keep it for the back button check
+
             return View(trip);
         }
 
@@ -118,12 +142,12 @@ namespace TripsLog.Controllers
                 Destination = destination,
                 StartDate = DateTime.Parse(startDateStr),
                 EndDate = DateTime.Parse(endDateStr),
-                Accommodation = new Accommodation
+                Accommodation = !string.IsNullOrWhiteSpace(accommodationName) ? new Accommodation
                 {
                     Name = accommodationName,
                     Phone = accommodationPhone,
                     Email = accommodationEmail
-                }
+                } : null
             };
 
             context.Trips.Add(completeTrip);

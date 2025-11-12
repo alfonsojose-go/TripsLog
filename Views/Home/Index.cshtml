@@ -25,14 +25,16 @@
                     <ul>
                         
                         <p>@trip.Accommodation.Name</p>
-                        <p>Phone: @trip.Accommodation.Phone</p>
-                        <p>Email: @trip.Accommodation.Email</p>
+                        @if(!string.IsNullOrEmpty(trip.Accommodation.Name))
+                        {
+                            <p>Phone: @trip.Accommodation.Phone</p>
+                            <p>Email: @trip.Accommodation.Email</p>
+                        }
+                        
                     
                     </ul>
                     
-                        
-                
-                    
+
 
                 </td>
                <td>
