@@ -24,7 +24,9 @@ namespace TripsLog.Controllers
                 .Include(t => t.Todos)
                 .OrderBy(c => c.Destination)
                 .ToList();
+            TempData.Clear();
             return View(trips);
+
         }
 
 
