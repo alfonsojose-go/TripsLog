@@ -175,6 +175,7 @@ namespace TripsLog.Controllers
             }
 
             TempData.Clear();
+            TempData["SuccessMessage"] = "Trip saved successfully!";
             return RedirectToAction("Index", "Home");
         }
     }
