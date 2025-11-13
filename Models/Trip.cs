@@ -14,7 +14,7 @@ namespace TripsLog.Models
         [DisplayFormat(DataFormatString = "{MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
-        public int AccomodationId { get; set; }
+        public int AccommodationId { get; set; }
 
         public Accommodation Accommodation { get; set; } = new Accommodation();
 
