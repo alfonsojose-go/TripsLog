@@ -1,28 +1,58 @@
-﻿@model TripsLog.Models.Trip;
+﻿@model TripsLog.Models.Trip
 @{
     ViewData["Title"] = "Add Trip Destination and Dates";
 }
 
-<h2 class="align-content-center">@ViewBag.Title</h2>
+<h2 class="align-content-center">@ViewData["Title"]</h2>
 
 <form asp-controller="Trip" asp-action="ProcessTrip" method="post">
-    <div>
-        <label asp-for="@Model.Destination">Destination</label>
-        <input asp-for="@Model.Destination" type="text" />
+    <div class="form-group">
+        <label asp-for="Destination"></label>
+        <input asp-for="Destination" class="form-control" />
+        <span asp-validation-for="Destination" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="@Model.Accommodation.Name">Accommodation</label>
-        <input asp-for="@Model.Accommodation.Name" type="text" />
+
+    <div class="form-group">
+        <label asp-for="Accommodation.Name">Accommodation</label>
+        <input asp-for="Accommodation.Name" class="form-control" />
+        <span asp-validation-for="Accommodation.Name" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="@Model.StartDate">Start Date</label>
-        <input asp-for="@Model.StartDate" type="date" />
+
+    <div class="form-group">
+        <label asp-for="StartDate"></label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
     </div>
-    <div>
-        <label asp-for="@Model.EndDate">End Date</label>
-        <input asp-for="@Model.EndDate" type="date" />
+
+    <div class="form-group">
+        <label asp-for="EndDate"></label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Next</button>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Cancel</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+<!-- Include jQuery and jQuery Unobtrusive Validation scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(function () {
+        $('form').submit(function () {
+            let startDate = new Date($('#StartDate').val());
+            let endDate = new Date($('#EndDate').val());
+            let errorSpan = $('#EndDate').siblings('.text-danger');
+
+            if (endDate < startDate) {
+                errorSpan.text('End Date cannot be earlier than Start Date.');
+                return false; // prevent form submission
+            } else {
+                errorSpan.text(''); // clear error
+            }
+        });
+    });
+</script>
+
